@@ -160,3 +160,4 @@ ver 2.17.0
 ver 2.17.1
 ==========
 - Fix processing on EOL markers making it accurate (mixed match resulted in odd behavior)
+- Added support for jsoup maxPaddingWidth, we default to -1 to disable to retain original behaviour on full pretty print

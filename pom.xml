@@ -446,6 +446,15 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <mapping combine.children="append">
+            <vm>XML_STYLE</vm>
+          </mapping>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>net.revelc.code.formatter</groupId>
         <artifactId>formatter-maven-plugin</artifactId>
         <executions>

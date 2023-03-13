@@ -16,16 +16,16 @@ package net.revelc.code.formatter.javascript;
 import java.io.IOException;
 import java.util.Map;
 
+import net.revelc.code.formatter.AbstractCacheableFormatter;
+import net.revelc.code.formatter.ConfigurationSource;
+import net.revelc.code.formatter.Formatter;
+import net.revelc.code.formatter.LineEnding;
+
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.wst.jsdt.core.ToolFactory;
 import org.eclipse.wst.jsdt.core.formatter.CodeFormatter;
-
-import net.revelc.code.formatter.AbstractCacheableFormatter;
-import net.revelc.code.formatter.ConfigurationSource;
-import net.revelc.code.formatter.Formatter;
-import net.revelc.code.formatter.LineEnding;
 
 /**
  * The Class JavascriptFormatter.

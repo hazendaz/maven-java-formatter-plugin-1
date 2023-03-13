@@ -20,17 +20,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import net.revelc.code.formatter.AbstractCacheableFormatter;
+import net.revelc.code.formatter.ConfigurationSource;
+import net.revelc.code.formatter.Formatter;
+import net.revelc.code.formatter.LineEnding;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Document.OutputSettings;
 import org.jsoup.nodes.Document.OutputSettings.Syntax;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.jsoup.parser.Parser;
-
-import net.revelc.code.formatter.AbstractCacheableFormatter;
-import net.revelc.code.formatter.ConfigurationSource;
-import net.revelc.code.formatter.Formatter;
-import net.revelc.code.formatter.LineEnding;
 
 /**
  * The Class JsoupBasedFormatter.

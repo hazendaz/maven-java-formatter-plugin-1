@@ -13,6 +13,9 @@
  */
 package net.revelc.code.formatter;
 
+import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -27,9 +30,6 @@ import org.apache.maven.plugin.logging.SystemStreamLog;
 import org.codehaus.plexus.util.FileUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-
-import com.google.common.hash.Hashing;
-import com.google.common.io.Files;
 
 /**
  * The Class AbstractFormatterTest.

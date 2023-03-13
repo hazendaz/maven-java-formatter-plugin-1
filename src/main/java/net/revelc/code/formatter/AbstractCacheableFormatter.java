@@ -18,13 +18,13 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Map;
 
-import org.apache.maven.plugin.logging.Log;
-import org.eclipse.jface.text.BadLocationException;
-import org.eclipse.text.edits.MalformedTreeException;
-
 import net.revelc.code.formatter.css.CssFormatter;
 import net.revelc.code.formatter.html.HTMLFormatter;
 import net.revelc.code.formatter.xml.XMLFormatter;
+
+import org.apache.maven.plugin.logging.Log;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.text.edits.MalformedTreeException;
 
 /**
  * The Class AbstractCacheableFormatter.

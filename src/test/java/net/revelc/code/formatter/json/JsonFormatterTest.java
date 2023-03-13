@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
+import net.revelc.code.formatter.AbstractFormatterTest;
+import net.revelc.code.formatter.LineEnding;
+
 import org.codehaus.plexus.util.IOUtil;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import net.revelc.code.formatter.AbstractFormatterTest;
-import net.revelc.code.formatter.LineEnding;
 
 /**
  * The Class JsonFormatterTest.

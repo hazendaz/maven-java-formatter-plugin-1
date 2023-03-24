@@ -208,7 +208,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      * @since 0.3
      */
     @Parameter(property = "project.build.sourceEncoding", required = true)
-    private String encoding;
+    protected String encoding;
 
     /**
      * Sets the line-ending of files after formatting. Valid values are:
@@ -223,7 +223,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      * @since 0.2.0
      */
     @Parameter(defaultValue = "AUTO", property = "lineending", required = true)
-    private LineEnding lineEnding;
+    protected LineEnding lineEnding;
 
     /**
      * File or classpath location of an Eclipse code formatter configuration xml file to use in formatting.
@@ -265,7 +265,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      * Whether the java formatting is skipped.
      */
     @Parameter(defaultValue = "false", property = "formatter.java.skip")
-    private boolean skipJavaFormatting;
+    protected boolean skipJavaFormatting;
 
     /**
      * Whether the javascript formatting is skipped.
@@ -309,7 +309,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      * Use eclipse defaults when set to true for java and javascript.
      */
     @Parameter(defaultValue = "false", property = "formatter.useEclipseDefaults")
-    private boolean useEclipseDefaults;
+    protected boolean useEclipseDefaults;
 
     /**
      * A java regular expression pattern that can be used to exclude some portions of the java code from being
@@ -363,7 +363,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
     private boolean includeResources;
 
     /** The java formatter. */
-    private final JavaFormatter javaFormatter = new JavaFormatter();
+    protected final JavaFormatter javaFormatter = new JavaFormatter();
 
     /** The js formatter. */
     private final JavascriptFormatter jsFormatter = new JavascriptFormatter();
@@ -836,7 +836,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      *
      * @return the string
      */
-    private String sha512hash(final String str) {
+    protected String sha512hash(final String str) {
         return Hashing.sha512().hashBytes(str.getBytes(this.getEncoding())).toString();
     }
 

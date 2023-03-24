@@ -90,7 +90,7 @@
   </developers>
 
   <prerequisites>
-    <maven>3.3.9</maven>
+    <maven>3.5.0</maven>
   </prerequisites>
 
   <scm>
@@ -138,6 +138,12 @@
         <version>5.9.2</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <!-- transitive dependency of org.eclipse.jdt.core resolved here to avoid version range -->
+        <groupId>org.eclipse.jdt</groupId>
+        <artifactId>ecj</artifactId>
+        <version>3.33.0</version>
       </dependency>
       <dependency>
         <!-- transitive dependency of org.eclipse.jdt.core resolved here to avoid version range -->
@@ -454,6 +460,14 @@
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
+          <licenseSets>
+            <licenseSet>
+              <header>LICENSE_HEADER</header>
+              <excludes>
+                <exclude>NOTICE</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
           <mapping combine.children="append">
             <vm>XML_STYLE</vm>
           </mapping>

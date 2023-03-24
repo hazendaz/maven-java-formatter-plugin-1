@@ -105,7 +105,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
     /**
      * The Maven project for retrieving the resources.
      */
-    @Component
+    @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
 
     /**
@@ -947,7 +947,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      */
     private Map<String, String> getFormattingOptions(final String newConfigFile) throws MojoExecutionException {
         if (this.useEclipseDefaults) {
-            this.getLog().info("Using Ecipse Defaults");
+            this.getLog().info("Using Eclipse Defaults");
             // Use defaults only for formatting
             final Map<String, String> options = new HashMap<>();
             options.put(JavaCore.COMPILER_SOURCE, this.compilerSource);

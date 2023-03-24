@@ -28,10 +28,9 @@
   <groupId>com.github.hazendaz.maven</groupId>
   <artifactId>formatter-maven-plugin</artifactId>
   <version>3.0.0-SNAPSHOT</version>
-
   <packaging>maven-plugin</packaging>
-  <name>formatter-maven-plugin</name>
 
+  <name>formatter-maven-plugin</name>
   <description>Maven plugin for formatting source code</description>
   <url>https://github.com/hazendaz/formatter-maven-plugin/</url>
   <inceptionYear>2010</inceptionYear>
@@ -117,8 +116,8 @@
   </distributionManagement>
 
   <properties>
-    <java.release.version>11</java.release.version>
     <!-- Maven compiler options -->
+    <java.release.version>11</java.release.version>
     <java.version>11</java.version>
     <javadoc.java.release.version>8</javadoc.java.release.version>
 

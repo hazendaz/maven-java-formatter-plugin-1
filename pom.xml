@@ -117,9 +117,9 @@
   </distributionManagement>
 
   <properties>
+    <java.release.version>11</java.release.version>
     <!-- Maven compiler options -->
     <java.version>11</java.version>
-    <java.release.version>11</java.release.version>
     <javadoc.java.release.version>8</javadoc.java.release.version>
   </properties>
 

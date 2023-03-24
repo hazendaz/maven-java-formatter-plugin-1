@@ -313,10 +313,10 @@
       <version>3.5.1</version>
     </dependency>
     <dependency>
-      <!-- bump this and run src/build/find-transitive-eclipse-updates.sh to update eclipse deps -->
+      <!-- Due to defect, run org.eclipse.jdk.core at 3.31.0 -->
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.33.0</version>
+      <version>3.31.0</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
@@ -392,6 +392,14 @@
             <skipJsonFormatting>true</skipJsonFormatting>
             <skipXmlFormatting>true</skipXmlFormatting>
           </configuration>
+          <dependencies>
+            <dependency>
+              <!-- Due to bug in Eclipse formatter, drop this back to 3.31.0 -->
+              <groupId>org.eclipse.jdt</groupId>
+              <artifactId>org.eclipse.jdt.core</artifactId>
+              <version>3.31.0</version>
+            </dependency>
+          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

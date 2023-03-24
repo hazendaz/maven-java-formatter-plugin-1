@@ -79,7 +79,6 @@ class FormatterMojoTest {
      */
     @Test
     void format_known_dirty_java_file() throws Exception {
-        String filePath = sourceFile.getAbsolutePath();
         cache.put(cacheKey, PREVIOUS_HASH);
 
         mojo.doFormatFile(sourceFile, rc, cache, basedir, false);
@@ -125,7 +124,6 @@ class FormatterMojoTest {
     @Test
     void format_new_clean_java_file() throws Exception {
         formatSourceFile();
-        String filePath = sourceFile.getCanonicalPath();
 
         mojo.doFormatFile(sourceFile, rc, cache, basedir, false);
 

@@ -528,7 +528,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Skipping non-existing directory %s", newBasedir));
             }
-            return Collections.emptyList();
+            return List.of(Collections.emptyList().toArray(new File[] {}));
         }
         final var ds = new DirectoryScanner();
         ds.setBasedir(newBasedir);
@@ -565,7 +565,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         for (final String filename : ds.getIncludedFiles()) {
             foundFiles.add(new File(newBasedir, filename));
         }
-        return foundFiles;
+        return List.of(foundFiles.toArray(new File[] {}));
     }
 
     /**

@@ -117,13 +117,9 @@
   </distributionManagement>
 
   <properties>
-    <java.release.version>11</java.release.version>
-    <java.test.release.version>11</java.test.release.version>
-
-    <!-- Delete these two after base-parent 39 released -->
-    <java.test.version>11</java.test.version>
     <!-- Maven compiler options -->
     <java.version>11</java.version>
+    <java.release.version>11</java.release.version>
   </properties>
 
   <dependencyManagement>

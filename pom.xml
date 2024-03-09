@@ -324,7 +324,7 @@
       <!-- Due to defect, run org.eclipse.jdk.core at 3.31.0 -->
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
-      <version>3.31.0</version>
+      <version>3.36.0</version>
     </dependency>
     <dependency>
       <groupId>org.jsoup</groupId>
@@ -405,7 +405,7 @@
               <!-- Due to bug in Eclipse formatter, drop this back to 3.31.0 -->
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>org.eclipse.jdt.core</artifactId>
-              <version>3.31.0</version>
+              <version>3.36.0</version>
             </dependency>
           </dependencies>
         </plugin>

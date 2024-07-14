@@ -48,32 +48,18 @@
     <developer>
       <id>jecki.go</id>
       <name>Jecki</name>
-      <email>jecki.go@gmail.com</email>
     </developer>
     <developer>
       <id>matt.blanchette</id>
       <name>Matt Blanchette</name>
-      <email>matt.blanchette@gmail.com</email>
     </developer>
     <developer>
       <id>velo</id>
       <name>Marvin Froeder</name>
-      <email>velo.br@gmail.com</email>
     </developer>
     <developer>
       <id>jlandis</id>
       <name>Jeremy Landis</name>
-      <email>jeremylandis@hotmail.com</email>
-      <url>https://www.linkedin.com/in/jeremy-landis-548b2719</url>
-      <organization>hazendaz</organization>
-      <organizationUrl>https://github.com/hazendaz</organizationUrl>
-      <roles>
-        <role>Developer</role>
-      </roles>
-      <timezone>-5</timezone>
-      <properties>
-        <picUrl>https://media.licdn.com/mpr/mpr/shrinknp_200_200/p/1/000/128/174/30cff69.jpg</picUrl>
-      </properties>
     </developer>
     <developer>
       <id>ctubbsii</id>
@@ -82,9 +68,6 @@
     <developer>
       <id>jam01</id>
       <name>Jose Montoya</name>
-      <email>jmontoya@ms3-inc.com</email>
-      <organization>ms3-inc</organization>
-      <organizationUrl>https://www.ms3-inc.com</organizationUrl>
     </developer>
   </developers>
 

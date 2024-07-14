@@ -16,7 +16,6 @@ package net.revelc.code.formatter;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
-import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 
 import java.io.BufferedInputStream;
@@ -42,6 +41,15 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import net.revelc.code.formatter.css.CssFormatter;
+import net.revelc.code.formatter.html.HTMLFormatter;
+import net.revelc.code.formatter.java.JavaFormatter;
+import net.revelc.code.formatter.javascript.JavascriptFormatter;
+import net.revelc.code.formatter.json.JsonFormatter;
+import net.revelc.code.formatter.model.ConfigReadException;
+import net.revelc.code.formatter.model.ConfigReader;
+import net.revelc.code.formatter.xml.XMLFormatter;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -61,15 +69,6 @@ import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.xml.sax.SAXException;
-
-import net.revelc.code.formatter.css.CssFormatter;
-import net.revelc.code.formatter.html.HTMLFormatter;
-import net.revelc.code.formatter.java.JavaFormatter;
-import net.revelc.code.formatter.javascript.JavascriptFormatter;
-import net.revelc.code.formatter.json.JsonFormatter;
-import net.revelc.code.formatter.model.ConfigReadException;
-import net.revelc.code.formatter.model.ConfigReader;
-import net.revelc.code.formatter.xml.XMLFormatter;
 
 /**
  * A Maven plugin mojo to format Java source code using the Eclipse code formatter.

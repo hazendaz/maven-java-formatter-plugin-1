@@ -301,13 +301,6 @@
             <skipJsonFormatting>true</skipJsonFormatting>
             <skipXmlFormatting>true</skipXmlFormatting>
           </configuration>
-          <dependencies>
-            <dependency>
-              <groupId>org.eclipse.jdt</groupId>
-              <artifactId>org.eclipse.jdt.core</artifactId>
-              <version>3.38.0</version>
-            </dependency>
-          </dependencies>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

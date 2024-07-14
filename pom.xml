@@ -117,9 +117,9 @@
 
   <properties>
     <!-- Maven compiler options -->
-    <java.release.version>11</java.release.version>
-    <java.version>11</java.version>
-    <javadoc.java.release.version>11</javadoc.java.release.version>
+    <java.release.version>17</java.release.version>
+    <java.version>17</java.version>
+    <javadoc.java.release.version>17</javadoc.java.release.version>
 
     <!-- Automatic Module Name -->
     <module.name>net.revelc.code.formatter</module.name>

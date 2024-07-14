@@ -323,6 +323,7 @@
       <artifactId>plexus-xml</artifactId>
       <version>3.0.0</version>
     </dependency>
+    <!-- bump this and run src/build/find-transitive-eclipse-updates.sh to update eclipse deps -->
     <dependency>
       <groupId>org.eclipse.jdt</groupId>
       <artifactId>org.eclipse.jdt.core</artifactId>
@@ -411,7 +412,6 @@
           </configuration>
           <dependencies>
             <dependency>
-              <!-- Due to bug in Eclipse formatter, drop this back to 3.31.0 -->
               <groupId>org.eclipse.jdt</groupId>
               <artifactId>org.eclipse.jdt.core</artifactId>
               <version>3.37.0</version>

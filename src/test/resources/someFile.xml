@@ -4,7 +4,7 @@
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
 
-         https://www.apache.org/licenses/LICENSE-2.0
+        https://www.apache.org/licenses/LICENSE-2.0
 
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,5 +17,9 @@
 <to>Tove</to>
 <from>Jani</from>
 <heading>Reminder</heading>
+<!--context-param>
+                                        <param-name>resteasy.document.secure.disableDTDs</param-name>
+                                        <param-value></param-value>
+                                    </context-param-->
 <body attr1="val1" attr2="val2" attr3="val3" attr4="a very very very very very very very very very very vey long val">Don't forget me this weekend!</body>
 </note>

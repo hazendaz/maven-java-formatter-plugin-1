@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,9 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.java;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,15 +44,19 @@ public class JavaFormatter extends AbstractCacheableFormatter implements Formatt
     /** The exclusion pattern. */
     private Pattern exclusionPattern;
 
+    /** The configuration options */
+    private Map<String, String> options;
+
     @Override
     public void init(final Map<String, String> options, final ConfigurationSource cfg) {
         super.initCfg(cfg);
 
         this.formatter = ToolFactory.createCodeFormatter(options, ToolFactory.M_FORMAT_EXISTING);
+        this.options = options;
     }
 
     @Override
-    public String doFormat(final String code, final LineEnding ending) throws IOException, BadLocationException {
+    public String doFormat(final String code, final LineEnding ending) throws BadLocationException {
         TextEdit te;
         try {
             final var regions = JavaFormatter.getRegions(code, this.exclusionPattern);
@@ -117,6 +121,15 @@ public class JavaFormatter extends AbstractCacheableFormatter implements Formatt
         }
         regions.add(new Region(start, code.length() - start));
         return regions.toArray(new IRegion[0]);
+    }
+
+    /**
+     * Gets the options.
+     *
+     * @return the options
+     */
+    public Map<String, String> getOptions() {
+        return options;
     }
 
 }

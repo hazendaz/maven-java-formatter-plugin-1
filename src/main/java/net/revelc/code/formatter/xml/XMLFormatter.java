@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.xml;
 
 import java.util.Map;
@@ -30,6 +31,9 @@ public class XMLFormatter extends AbstractCacheableFormatter implements Formatte
     /** The formatter. */
     private XmlDocumentFormatter formatter;
 
+    /** The configuration options */
+    private Map<String, String> options;
+
     @Override
     public void init(final Map<String, String> options, final ConfigurationSource cfg) {
         super.initCfg(cfg);
@@ -44,6 +48,7 @@ public class XMLFormatter extends AbstractCacheableFormatter implements Formatte
         prefs.setDeleteBlankLines(Boolean.parseBoolean(options.getOrDefault("deleteBlankLines", "false")));
 
         this.formatter = new XmlDocumentFormatter(options.getOrDefault("lineending", System.lineSeparator()), prefs);
+        this.options = options;
     }
 
     @Override
@@ -60,6 +65,15 @@ public class XMLFormatter extends AbstractCacheableFormatter implements Formatte
     @Override
     public boolean isInitialized() {
         return this.formatter != null;
+    }
+
+    /**
+     * Gets the options.
+     *
+     * @return the options
+     */
+    public Map<String, String> getOptions() {
+        return options;
     }
 
 }

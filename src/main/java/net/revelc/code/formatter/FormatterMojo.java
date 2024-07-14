@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter;
 
 import static java.util.concurrent.TimeUnit.NANOSECONDS;
@@ -19,16 +20,17 @@ import com.google.common.base.Strings;
 import com.google.common.hash.Hashing;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.StringWriter;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,20 +42,11 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.revelc.code.formatter.css.CssFormatter;
-import net.revelc.code.formatter.html.HTMLFormatter;
-import net.revelc.code.formatter.java.JavaFormatter;
-import net.revelc.code.formatter.javascript.JavascriptFormatter;
-import net.revelc.code.formatter.json.JsonFormatter;
-import net.revelc.code.formatter.model.ConfigReadException;
-import net.revelc.code.formatter.model.ConfigReader;
-import net.revelc.code.formatter.xml.XMLFormatter;
-
+import org.apache.commons.lang3.StringUtils;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Component;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -63,14 +56,20 @@ import org.codehaus.plexus.resource.ResourceManager;
 import org.codehaus.plexus.resource.loader.FileResourceLoader;
 import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
 import org.codehaus.plexus.util.DirectoryScanner;
-import org.codehaus.plexus.util.ReaderFactory;
-import org.codehaus.plexus.util.StringUtils;
-import org.codehaus.plexus.util.WriterFactory;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.formatter.CodeFormatter;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.text.edits.MalformedTreeException;
 import org.xml.sax.SAXException;
+
+import net.revelc.code.formatter.css.CssFormatter;
+import net.revelc.code.formatter.html.HTMLFormatter;
+import net.revelc.code.formatter.java.JavaFormatter;
+import net.revelc.code.formatter.javascript.JavascriptFormatter;
+import net.revelc.code.formatter.json.JsonFormatter;
+import net.revelc.code.formatter.model.ConfigReadException;
+import net.revelc.code.formatter.model.ConfigReader;
+import net.revelc.code.formatter.xml.XMLFormatter;
 
 /**
  * A Maven plugin mojo to format Java source code using the Eclipse code formatter.
@@ -263,6 +262,14 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
     private String configCssFile;
 
     /**
+     * Whether the formatting cache is skipped.
+     *
+     * @since 2.23.0
+     */
+    @Parameter(defaultValue = "false", property = "formatter.cache.skip")
+    private boolean skipFormattingCache;
+
+    /**
      * Whether the java formatting is skipped.
      */
     @Parameter(defaultValue = "false", property = "formatter.java.skip")
@@ -404,7 +411,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         final var startClock = System.nanoTime();
 
         if (StringUtils.isEmpty(this.encoding)) {
-            this.encoding = ReaderFactory.FILE_ENCODING;
+            this.encoding = Charset.defaultCharset().displayName();
             this.getLog().warn("File encoding has not been set, using platform encoding (" + this.encoding
                     + ") to format source files, i.e. build is platform dependent!");
         } else {
@@ -450,36 +457,48 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         final var msg = "Number of files to be formatted: " + numberOfFiles;
         log.debug(msg);
 
-        if (numberOfFiles > 0) {
-            this.createCodeFormatter();
-            final var rc = new ResultCollector();
-            final var hashCache = this.readFileHashCacheFile();
+        if (numberOfFiles == 0) {
+            return;
+        }
 
-            final var basedirPath = this.getBasedirPath();
-            for (final File file : files) {
-                if (file.exists()) {
-                    if (file.canWrite()) {
-                        this.formatFile(file, rc, hashCache, basedirPath);
-                    } else {
-                        rc.readOnlyCount++;
-                    }
+        this.createCodeFormatter();
+        final var rc = new ResultCollector();
+        final var hashCache = this.readFileHashCacheFile();
+
+        final var basedirPath = this.getBasedirPath();
+        for (final File file : files) {
+            if (file.exists()) {
+                if (file.canWrite()) {
+                    this.formatFile(file, rc, hashCache, basedirPath);
                 } else {
-                    rc.failCount++;
+                    rc.readOnlyCount++;
+                    this.getLog().warn("File " + file + " is read only");
                 }
+            } else {
+                rc.failCount++;
+                this.getLog().error("File " + file + " does not exist");
             }
+        }
 
-            // Only store the cache if it changed during processing to avoid java properties timestamp writing for
-            // those that want to save the cache
-            if (this.hashCacheWritten) {
-                this.storeFileHashCache(hashCache);
-            }
+        // Only store the cache if it changed during processing to avoid java properties timestamp writing for
+        // those that want to save the cache
+        if (this.hashCacheWritten) {
+            this.storeFileHashCache(hashCache);
+        }
 
-            final var duration = NANOSECONDS.toMillis(System.nanoTime() - startClock);
-            final var elapsed = TimeUtil.printDuration(duration);
+        final var duration = NANOSECONDS.toMillis(System.nanoTime() - startClock);
+        final var elapsed = TimeUtil.printDuration(duration);
 
-            final String results = String.format(
-                    "Processed %d files in %s (Formatted: %d, Unchanged: %d, Failed: %d, Readonly: %d)", numberOfFiles,
-                    elapsed, rc.successCount, rc.skippedCount, rc.failCount, rc.readOnlyCount);
+        final var results = String.format(
+                "Processed %d files in %s (Formatted: %d, Skipped: %d, Unchanged: %d, Failed: %d, Readonly: %d)",
+                numberOfFiles, elapsed, rc.successCount, rc.skippedCount, rc.unchangedCount, rc.failCount,
+                rc.readOnlyCount);
+
+        if (rc.failCount > 0) {
+            this.getLog().error(results);
+        } else if (rc.readOnlyCount > 0) {
+            this.getLog().warn(results);
+        } else {
             this.getLog().info(results);
         }
     }
@@ -525,7 +544,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
     private List<File> addCollectionFiles(final Resource resource) {
         final var newBasedir = new File(resource.getDirectory());
         if (!newBasedir.exists()) {
-            final Log log = getLog();
+            final var log = getLog();
             if (log.isDebugEnabled()) {
                 log.debug(String.format("Skipping non-existing directory %s", newBasedir));
             }
@@ -562,8 +581,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         ds.setFollowSymlinks(false);
         ds.scan();
 
-        return Stream.of(ds.getIncludedFiles()).map(filename -> new File(newBasedir, filename))
-                .collect(Collectors.toUnmodifiableList());
+        return Stream.of(ds.getIncludedFiles()).map(filename -> new File(newBasedir, filename)).toList();
     }
 
     /**
@@ -587,42 +605,14 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      *            the props
      */
     private void storeFileHashCache(final Properties props) {
-        final var cacheFile = new File(this.cachedir, FormatterMojo.CACHE_PROPERTIES_FILENAME);
-        try (OutputStream out = new BufferedOutputStream(new FileOutputStream(cacheFile))) {
-            this.getLog().debug("Storing property file cache");
-            props.store(out, null);
+        final var cacheFile = Path.of(this.cachedir.getAbsolutePath(), CACHE_PROPERTIES_FILENAME);
+        try (var sw = new StringWriter()) {
+            props.store(sw, null);
+            getLog().debug("Writing sorted files to cache without timestamp:\n\n" + props);
+            Files.write(cacheFile, (Iterable<String>) sw.toString().lines().skip(1).sorted()::iterator,
+                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (final IOException e) {
             this.getLog().warn("Cannot store file hash cache properties file", e);
-            return;
-        }
-
-        // Run update on cache file to make sure its sorted and we remove the property timestamp
-        final List<String> existing;
-        try {
-            // Read in existing file
-            this.getLog().debug("Reading property file cache");
-            existing = Files.readAllLines(cacheFile.toPath());
-        } catch (final IOException e) {
-            this.getLog().warn("Cannot read the hash cache properties file", e);
-            return;
-        }
-
-        // Sort the properties
-        this.getLog().debug("Sorting property file cache");
-        Collections.sort(existing);
-
-        // Remove properties timestamp
-        this.getLog().debug("Removing timestamp from property file cache");
-        existing.remove(0);
-
-        // Write file back
-        try {
-            this.getLog().debug("Writing sorted cache file with no timestamp");
-            this.getLog().debug("Files in cache are:\n\n" + existing);
-            Files.deleteIfExists(cacheFile.toPath());
-            Files.write(cacheFile.toPath(), existing, StandardOpenOption.CREATE);
-        } catch (IOException e) {
-            this.getLog().warn("Cannot write the hash cache properties file", e);
         }
     }
 
@@ -678,7 +668,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
             this.doFormatFile(file, rc, hashCache, basedirPath, false);
         } catch (IOException | MalformedTreeException | BadLocationException e) {
             rc.failCount++;
-            this.getLog().warn(e);
+            this.getLog().error(e);
         }
     }
 
@@ -710,56 +700,56 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
             throws IOException, BadLocationException, MojoFailureException, MojoExecutionException {
         final var log = this.getLog();
         log.debug("Processing file: " + file);
+        final var fileName = file.getName();
         final var originalCode = this.readFileAsString(file);
-        final var originalHash = this.sha512hash(originalCode);
-
+        final var originalHash = this.calculateHash(fileName, originalCode);
         final var canonicalPath = file.getCanonicalPath();
         final var path = canonicalPath.substring(basedirPath.length());
         final var cachedHash = hashCache.getProperty(path);
-        if (cachedHash != null && cachedHash.equals(originalHash)) {
+        if (!skipFormattingCache && cachedHash != null && cachedHash.equals(originalHash)) {
             rc.skippedCount++;
-            log.debug("File is already formatted.");
+            log.debug("Cache hit: file is already formatted.");
             return;
         }
 
         Result result = null;
         String formattedCode = null;
-        if (file.getName().endsWith(".java") && this.javaFormatter.isInitialized()) {
+        if (fileName.endsWith(".java") && this.javaFormatter.isInitialized()) {
             if (this.skipJavaFormatting) {
                 log.debug(Type.JAVA + FormatterMojo.FORMATTING_IS_SKIPPED);
                 result = Result.SKIPPED;
             } else {
                 formattedCode = this.javaFormatter.formatFile(file, originalCode, this.lineEnding);
             }
-        } else if (file.getName().endsWith(".js") && this.jsFormatter.isInitialized()) {
+        } else if (fileName.endsWith(".js") && this.jsFormatter.isInitialized()) {
             if (this.skipJsFormatting) {
                 log.debug(Type.JAVASCRIPT + FormatterMojo.FORMATTING_IS_SKIPPED);
                 result = Result.SKIPPED;
             } else {
                 formattedCode = this.jsFormatter.formatFile(file, originalCode, this.lineEnding);
             }
-        } else if (file.getName().endsWith(".html") && this.htmlFormatter.isInitialized()) {
+        } else if (fileName.endsWith(".html") && this.htmlFormatter.isInitialized()) {
             if (this.skipHtmlFormatting) {
                 log.debug(Type.HTML + FormatterMojo.FORMATTING_IS_SKIPPED);
                 result = Result.SKIPPED;
             } else {
                 formattedCode = this.htmlFormatter.formatFile(file, originalCode, this.lineEnding);
             }
-        } else if (file.getName().endsWith(".xml") && this.xmlFormatter.isInitialized()) {
+        } else if (fileName.endsWith(".xml") && this.xmlFormatter.isInitialized()) {
             if (this.skipXmlFormatting) {
                 log.debug(Type.XML + FormatterMojo.FORMATTING_IS_SKIPPED);
                 result = Result.SKIPPED;
             } else {
                 formattedCode = this.xmlFormatter.formatFile(file, originalCode, this.lineEnding);
             }
-        } else if (file.getName().endsWith(".json") && this.jsonFormatter.isInitialized()) {
+        } else if (fileName.endsWith(".json") && this.jsonFormatter.isInitialized()) {
             if (this.skipJsonFormatting) {
                 log.debug(Type.JSON + FormatterMojo.FORMATTING_IS_SKIPPED);
                 result = Result.SKIPPED;
             } else {
                 formattedCode = this.jsonFormatter.formatFile(file, originalCode, this.lineEnding);
             }
-        } else if (file.getName().endsWith(".css") && this.cssFormatter.isInitialized()) {
+        } else if (fileName.endsWith(".css") && this.cssFormatter.isInitialized()) {
             if (this.skipCssFormatting) {
                 log.debug(Type.CSS + FormatterMojo.FORMATTING_IS_SKIPPED);
                 result = Result.SKIPPED;
@@ -767,7 +757,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
                 formattedCode = this.cssFormatter.formatFile(file, originalCode, this.lineEnding);
             }
         } else {
-            log.debug("No formatter found or initialization failed for file " + file.getName());
+            log.debug("No formatter found or initialization failed for file " + fileName);
             result = Result.SKIPPED;
         }
 
@@ -786,7 +776,8 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
 
         // Process the result type
         if (Result.SKIPPED.equals(result)) {
-            rc.skippedCount++;
+            // Use unchanged count for files that either 'skipFormattingCache' or cache missed but flagged to skip formatting.
+            rc.unchangedCount++;
         } else if (Result.SUCCESS.equals(result)) {
             rc.successCount++;
         } else if (Result.FAIL.equals(result)) {
@@ -799,14 +790,14 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         if (Result.SKIPPED.equals(result)) {
             formattedHash = originalHash;
         } else {
-            formattedHash = this.sha512hash(Strings.nullToEmpty(formattedCode));
+            formattedHash = this.calculateHash(fileName, formattedCode);
         }
         hashCache.setProperty(path, formattedHash);
         this.hashCacheWritten = true;
 
         // If we had determined to skip write, do so now after cache was written
         if (Result.SKIPPED.equals(result)) {
-            log.debug("File is already formatted.  Writing to cache only.");
+            log.debug("File is already formatted. Writing to cache only.");
             return;
         }
 
@@ -824,6 +815,46 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         } else {
             this.writeStringToFile(formattedCode, file);
         }
+    }
+
+    /**
+     * Calculate Hash.
+     *
+     * @param fileType
+     *            the file type being processed
+     * @param code
+     *            the code file for generating the hash
+     *
+     * @return the calculated hash for the file
+     */
+    private String calculateHash(final String fileType, final String code) {
+        // Include formatter options with each known type
+        if (fileType.endsWith(".java")) {
+            return this.sha512hash(code + this.javaFormatter.getOptions().hashCode());
+        }
+
+        if (fileType.endsWith(".js")) {
+            return this.sha512hash(code + this.jsFormatter.getOptions().hashCode());
+        }
+
+        if (fileType.endsWith(".html")) {
+            return this.sha512hash(code + this.htmlFormatter.getOptions().hashCode());
+        }
+
+        if (fileType.endsWith(".xml")) {
+            return this.sha512hash(code + this.xmlFormatter.getOptions().hashCode());
+        }
+
+        if (fileType.endsWith(".json")) {
+            return this.sha512hash(code + this.jsonFormatter.getOptions().hashCode());
+        }
+
+        if (fileType.endsWith(".css")) {
+            return this.sha512hash(code + this.cssFormatter.getOptions().hashCode());
+        }
+
+        // Default to formatted hashing for unknown type
+        return this.sha512hash(code);
     }
 
     /**
@@ -851,7 +882,9 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
      */
     private String readFileAsString(final File file) throws IOException {
         final var fileData = new StringBuilder(1000);
-        try (var reader = new BufferedReader(ReaderFactory.newReader(file, this.encoding))) {
+        try (var fileStream = Files.newInputStream(file.toPath());
+                var fileReader = new InputStreamReader(fileStream, this.encoding);
+                var reader = new BufferedReader(fileReader)) {
             var buf = new char[1024];
             var numRead = 0;
             while ((numRead = reader.read(buf)) != -1) {
@@ -879,7 +912,9 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
             return;
         }
 
-        try (var bw = new BufferedWriter(WriterFactory.newWriter(file, this.encoding))) {
+        try (var fileStream = Files.newOutputStream(file.toPath());
+                var fileWriter = new OutputStreamWriter(fileStream, this.encoding);
+                var bw = new BufferedWriter(fileWriter)) {
             bw.write(str);
         }
     }
@@ -911,13 +946,17 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         // Xml Setup
         if (this.configXmlFile != null) {
             final var xmlFormattingOptions = this.getOptionsFromPropertiesFile(this.configXmlFile);
-            xmlFormattingOptions.put("lineending", this.lineEnding.getChars());
+            if (this.lineEnding != LineEnding.KEEP) {
+                xmlFormattingOptions.put("lineending", this.lineEnding.getChars());
+            }
             this.xmlFormatter.init(xmlFormattingOptions, this);
         }
         // Json Setup
         if (this.configJsonFile != null) {
             final var jsonFormattingOptions = this.getOptionsFromPropertiesFile(this.configJsonFile);
-            jsonFormattingOptions.put("lineending", this.lineEnding.getChars());
+            if (this.lineEnding != LineEnding.KEEP) {
+                jsonFormattingOptions.put("lineending", this.lineEnding.getChars());
+            }
             this.jsonFormatter.init(jsonFormattingOptions, this);
         }
         // Css Setup
@@ -926,7 +965,7 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         }
         // stop the process if not config files where found
         if (javaFormattingOptions == null && jsFormattingOptions == null && this.configHtmlFile == null
-                && this.configXmlFile == null && this.configCssFile == null) {
+                && this.configXmlFile == null && this.configJsonFile == null && this.configCssFile == null) {
             throw new MojoExecutionException(
                     "You must provide a Java, Javascript, HTML, XML, JSON, or CSS configuration file.");
         }
@@ -1074,8 +1113,11 @@ public class FormatterMojo extends AbstractMojo implements ConfigurationSource {
         /** The fail count. */
         int failCount;
 
-        /** The skipped count. */
+        /** The skipped count is incremented for cached files that haven't changed since being cached. */
         int skippedCount;
+
+        /** Use unchanged count for files that either 'skipFormattingCache' or cache missed but flagged to skip formatting. */
+        int unchangedCount;
 
         /** The read only count. */
         int readOnlyCount;

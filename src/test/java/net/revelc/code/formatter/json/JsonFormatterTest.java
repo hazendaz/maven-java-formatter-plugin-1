@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,9 +11,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.json;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -23,7 +25,7 @@ import java.util.Objects;
 import net.revelc.code.formatter.AbstractFormatterTest;
 import net.revelc.code.formatter.LineEnding;
 
-import org.codehaus.plexus.util.IOUtil;
+import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -35,11 +37,9 @@ class JsonFormatterTest extends AbstractFormatterTest {
     /**
      * Test do format file.
      *
-     * @throws Exception
-     *             the exception
      */
     @Test
-    void testDoFormatFile() throws Exception {
+    void testDoFormatFile() {
         // Since we set the line endings via options for json, we cannot rely on CRLF inside twoPassTest.
         // The option will not be available inside json formatter init so it will use whatever the system
         // default is regardless of requesting it to be CRLF later which is ignored.
@@ -65,11 +65,9 @@ class JsonFormatterTest extends AbstractFormatterTest {
     /**
      * Test do format file with config.
      *
-     * @throws Exception
-     *             the exception
      */
     @Test
-    void testDoFormatFileWithConfig() throws Exception {
+    void testDoFormatFileWithConfig() {
         final Map<String, String> jsonFormattingOptions = new HashMap<>();
         jsonFormattingOptions.put("indent", "2");
         jsonFormattingOptions.put("spaceBeforeSeparator", "false");
@@ -79,19 +77,19 @@ class JsonFormatterTest extends AbstractFormatterTest {
         // The option will not be available inside json formatter init so it will use whatever the system
         // default is regardless of requesting it to be CRLF later which is ignored.
         final var expectedHash = LineEnding.LF.isSystem()
-                ? "0ca303fef968b92f3f798ff1615cd6c501ea3b754fd18f54932fd07c1dce86d2df9845817b8f521a2254c98c6e0d35b0bced3ea12113e961d3789111868897d7"
-                : "5d433f2700a2fdabfabdb309d5f807df91ad86f7a94658d4a3f2f3699ae78b2efb1de451c141f61905f1c814cd647f312ae9651454e65d124510be0573082e86";
+                ? "3886d1b96fa1b887e48ec7317c7e7aa034b30b902e6697a646401e8c04d9301e08621dd8a4c7830f8a3a51977592574020e489a5de0d8f0b799f5c412cd57bd9"
+                : "0e37513ff8430246ff75edb33b61b3427546a84ef4eb83eaf2214249572b1f91305a2d4b3bd748354d74f9baf638d8ac8c3d7ee1cac2fb3aee55c19a040aea23";
         final var lineEnding = LineEnding.LF.isSystem() ? LineEnding.LF : LineEnding.CRLF;
         this.twoPassTest(jsonFormattingOptions, new JsonFormatter(), "someFile.json", expectedHash, lineEnding);
     }
 
     @Test
-    public void testMultipleJson() throws IOException {
+    void testMultipleJson() throws IOException {
         testFormattingObjects("/multiple-json");
     }
 
     @Test
-    public void testNormalJson() throws IOException {
+    void testNormalJson() throws IOException {
         testFormattingObjects("/normal-json");
     }
 
@@ -99,10 +97,10 @@ class JsonFormatterTest extends AbstractFormatterTest {
         String originalJson;
         String expectedFormattedJson;
         try (var in = getClass().getResourceAsStream(testpath + "/before.json")) {
-            originalJson = IOUtil.toString(Objects.requireNonNull(in), "UTF-8");
+            originalJson = IOUtils.toString(Objects.requireNonNull(in), StandardCharsets.UTF_8);
         }
         try (var in = getClass().getResourceAsStream(testpath + "/after.json")) {
-            expectedFormattedJson = IOUtil.toString(Objects.requireNonNull(in), "UTF-8");
+            expectedFormattedJson = IOUtils.toString(Objects.requireNonNull(in), StandardCharsets.UTF_8);
         }
         for (LineEnding currentTestedLineEnding : EnumSet.of(LineEnding.CRLF, LineEnding.LF, LineEnding.CR)) {
             final var jsonFormatter = new JsonFormatter();

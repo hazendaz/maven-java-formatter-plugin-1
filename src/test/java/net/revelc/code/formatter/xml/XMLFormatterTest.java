@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.xml;
 
 import java.util.Collections;
@@ -29,29 +30,25 @@ class XMLFormatterTest extends AbstractFormatterTest {
     /**
      * Test do format file.
      *
-     * @throws Exception
-     *             the exception
      */
     @Test
-    void testDoFormatFile() throws Exception {
+    void testDoFormatFile() {
         // Since we set the line endings via options for xml, we cannot rely on CRLF inside twoPassTest.
         // The option will not be available inside xml formatter init so it will use whatever the system
         // default is regardless of requesting it to be CRLF later which is ignored.
         final var expectedHash = LineEnding.LF.isSystem()
-                ? "50bd28ef987519facbeffa1a5c3e2ef484adddfe192b44ee1ae2d27d2ca31697b64918a163e3ba4f5f46cfe33c733b7aeb836c01ae01e139ed0138a956300d7c"
-                : "2237283dbc5f0fa0af5460f51407abf9732c1f7a785d3e60d0953addf41774805f36e6cfe1ebee8da7f09d62265a5ca623e99d473aaaf52676bc539e0b2cfb04";
+                ? "a9c0300d0ab7290d26099d4fbdf353eadbed9cd0a78b3ec66985b6a7b710138f217578a1185d05d7ae80b84761a000113134bc7e5339e80ff1a17a468a38c1a5"
+                : "281854ee2ca10debb947f9b35f3acf769a8f89a59c199fbff041a780c912c12ba6215130943439961d3aefbdf84008b7b1f5b11e4c4807ee2f48d0b879c038ee";
         final var lineEnding = LineEnding.LF.isSystem() ? LineEnding.LF : LineEnding.CRLF;
         this.twoPassTest(Collections.emptyMap(), new XMLFormatter(), "someFile.xml", expectedHash, lineEnding);
     }
 
     /**
-     * Test is intialized.
+     * Test is initialized.
      *
-     * @throws Exception
-     *             the exception
      */
     @Test
-    void testIsIntialized() throws Exception {
+    void testIsInitialized() {
         final var xmlFormatter = new XMLFormatter();
         Assertions.assertFalse(xmlFormatter.isInitialized());
         xmlFormatter.init(Collections.emptyMap(),

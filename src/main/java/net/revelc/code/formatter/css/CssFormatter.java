@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.css;
 
 import com.steadystate.css.dom.CSSStyleSheetImpl;
@@ -37,6 +38,9 @@ public class CssFormatter extends AbstractCacheableFormatter implements Formatte
     /** The formatter. */
     private CSSFormat formatter;
 
+    /** The configuration options */
+    private Map<String, String> options;
+
     @Override
     public void init(final Map<String, String> options, final ConfigurationSource cfg) {
         super.initCfg(cfg);
@@ -47,6 +51,7 @@ public class CssFormatter extends AbstractCacheableFormatter implements Formatte
                 .parseBoolean(options.getOrDefault("useSourceStringValues", Boolean.FALSE.toString()));
         this.formatter = new CSSFormat().setPropertiesInSeparateLines(indent).setRgbAsHex(rgbAsHex)
                 .setUseSourceStringValues(useSourceStringValues);
+        this.options = options;
     }
 
     @Override
@@ -57,11 +62,12 @@ public class CssFormatter extends AbstractCacheableFormatter implements Formatte
         final var sheet = (CSSStyleSheetImpl) parser.parseStyleSheet(source, null, null);
         var formattedCode = sheet.getCssText(this.formatter);
 
+        // TODO Remove this as IE is long dead and no longer supported.
         // Patch converted 'tab' back to '\9' for IE 7,8, and 9 hack. Cssparser switches it to 'tab'.
         formattedCode = formattedCode.replace("\t;", "\\9;");
 
         // Adding new line at end of file when needed
-        String[] lines = formattedCode.split(ending.getChars(), -1);
+        var lines = formattedCode.split(ending.getChars(), -1);
         if (!lines[lines.length - 1].equals(ending.getChars())) {
             formattedCode = formattedCode + ending.getChars();
         }
@@ -75,6 +81,15 @@ public class CssFormatter extends AbstractCacheableFormatter implements Formatte
     @Override
     public boolean isInitialized() {
         return this.formatter != null;
+    }
+
+    /**
+     * Gets the options.
+     *
+     * @return the options
+     */
+    public Map<String, String> getOptions() {
+        return options;
     }
 
 }

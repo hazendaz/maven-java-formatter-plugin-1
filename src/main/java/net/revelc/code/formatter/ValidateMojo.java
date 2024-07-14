@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter;
 
 import java.io.File;
@@ -100,11 +101,10 @@ public class ValidateMojo extends FormatterMojo {
     }
 
     private String formatCommand() {
-        String mojoInvocation = String.format("%s:%s:%s:%s", mojoGroupId, mojoArtifactId, mojoVersion,
-                FORMAT_MOJO_NAME);
-        boolean isMultiModule = mavenSession.getAllProjects().size() > 1;
-        Path moduleDir = Path.of(".").toAbsolutePath().relativize(mavenProject.getBasedir().toPath().toAbsolutePath());
-        String specifyModule = isMultiModule ? String.format("-f %s", moduleDir) : "";
+        var mojoInvocation = String.format("%s:%s:%s:%s", mojoGroupId, mojoArtifactId, mojoVersion, FORMAT_MOJO_NAME);
+        var isMultiModule = mavenSession.getAllProjects().size() > 1;
+        var moduleDir = Path.of(".").toAbsolutePath().relativize(mavenProject.getBasedir().toPath().toAbsolutePath());
+        var specifyModule = isMultiModule ? String.format("-f %s", moduleDir) : "";
         return String.format("mvn %s %s", specifyModule, mojoInvocation).replace("  ", " ");
     }
 

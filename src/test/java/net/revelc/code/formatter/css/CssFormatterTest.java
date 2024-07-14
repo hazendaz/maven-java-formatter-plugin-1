@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.css;
 
 import java.util.Collections;
@@ -29,11 +30,9 @@ class CssFormatterTest extends AbstractFormatterTest {
     /**
      * Test do format file.
      *
-     * @throws Exception
-     *             the exception
      */
     @Test
-    void testDoFormatFile() throws Exception {
+    void testDoFormatFile() {
         // FIXME Handle linux vs windows since this formatter does not accept line endings
         final var expectedHash = LineEnding.LF.isSystem()
                 ? "6434062bd7499e707dea1ea17d301556712222b7671fae79ec20d906cda467a2b2210896a196dbaa9da7d221f04cab87a6b2e5538ca3c46fa7fdbedb46010a8c"
@@ -43,13 +42,11 @@ class CssFormatterTest extends AbstractFormatterTest {
     }
 
     /**
-     * Test is intialized.
+     * Test is initialized.
      *
-     * @throws Exception
-     *             the exception
      */
     @Test
-    void testIsIntialized() throws Exception {
+    void testIsInitialized() {
         final var cssFormatter = new CssFormatter();
         Assertions.assertFalse(cssFormatter.isInitialized());
         cssFormatter.init(Collections.emptyMap(),

@@ -3,7 +3,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      https://www.apache.org/licenses/LICENSE-2.0
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package net.revelc.code.formatter.jsoup;
 
 import java.nio.charset.Charset;
@@ -46,6 +47,9 @@ public abstract class JsoupBasedFormatter extends AbstractCacheableFormatter imp
     /** The formatter. */
     private OutputSettings formatter;
 
+    /** The configuration options */
+    private Map<String, String> options;
+
     @Override
     public void init(final Map<String, String> options, final ConfigurationSource cfg) {
         super.initCfg(cfg);
@@ -58,6 +62,7 @@ public abstract class JsoupBasedFormatter extends AbstractCacheableFormatter imp
         this.formatter.outline(Boolean.parseBoolean(options.getOrDefault("outlineMode", Boolean.TRUE.toString())));
         this.formatter.prettyPrint(Boolean.parseBoolean(options.getOrDefault("pretty", Boolean.TRUE.toString())));
         this.formatter.syntax(Syntax.valueOf(options.getOrDefault("syntax", Syntax.html.name())));
+        this.options = options;
     }
 
     @Override
@@ -69,7 +74,7 @@ public abstract class JsoupBasedFormatter extends AbstractCacheableFormatter imp
         document = Jsoup.parse(code, "", Parser.htmlParser());
         document.outputSettings(this.formatter);
 
-        // Perform Jsoup Pretty Format which does result in inconsistences handled after
+        // Perform Jsoup Pretty Format which does result in inconsistencies handled after
         var formattedCode = document.outerHtml();
 
         // XXX: Trim trailing spaces inserted by jsoup. We do fix this during a full run
@@ -79,7 +84,7 @@ public abstract class JsoupBasedFormatter extends AbstractCacheableFormatter imp
         // XXX: Jsoup results in mixed line ending content needing normalized until jsoup
         // provides line ending support. Internally Jsoup simply uses new line only and
         // mixture comes from lines that did not require additional formatting.
-        String[] lines = formattedCode.split("\\r?\\n");
+        var lines = formattedCode.split("\\r?\\n");
         formattedCode = String.join(ending.getChars(), lines);
 
         // XXX: Fixing jsoup counter issue when more than one character indentation until jsoup fixes bug.
@@ -125,6 +130,15 @@ public abstract class JsoupBasedFormatter extends AbstractCacheableFormatter imp
     @Override
     public boolean isInitialized() {
         return this.formatter != null;
+    }
+
+    /**
+     * Gets the options.
+     *
+     * @return the options
+     */
+    public Map<String, String> getOptions() {
+        return options;
     }
 
 }
